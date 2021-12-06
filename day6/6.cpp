@@ -14,9 +14,7 @@ void split(const std::string &row, long *array)
   for (char c : row)
   {
     if (isdigit(c))
-    {
       array[c - '0']++;
-    }
   }
 }
 
@@ -37,14 +35,14 @@ long find_fish(long *input, int days)
       array[i] = prev;
       prev = temp;
     }
+
     array[SIZE - 3] += new_fish;
     start++;
   }
 
   for (size_t i = 0; i < SIZE; i++)
-  {
     sum += array[i];
-  }
+
   return sum;
 }
 

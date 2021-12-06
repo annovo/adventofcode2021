@@ -14,9 +14,7 @@ std::pair<std::pair<int, int>, std::pair<int, int>> split(const std::string &row
   {
 
     if (isdigit(c))
-    {
       symbol.push_back(c);
-    }
 
     if (c == ',' || c == '-')
     {
@@ -53,26 +51,20 @@ void update_map(std::map<std::pair<int, int>, int> &m, int first_x, int last_x,
   {
     auto pair = std::make_pair(first_x, first_y);
     auto it = m.find(pair);
-    if (it == m.end())
-    {
 
+    if (it == m.end())
       m.insert({pair, 1});
-    }
     else
-    {
       it->second = it->second + 1;
-    }
 
     if (first_y == last_y && first_x == last_x)
       break;
+
     if (first_x != last_x)
-    {
       first_x += sign_x;
-    }
+
     if (first_y != last_y)
-    {
       first_y += sign_y;
-    }
   }
 }
 
