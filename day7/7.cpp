@@ -2,7 +2,6 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include <unordered_set>
 #include <cmath>
 
 void split(const std::string &row, std::vector<int> &array)
