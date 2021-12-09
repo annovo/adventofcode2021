@@ -36,7 +36,7 @@ long find_risk(const std::vector<std::vector<int>> &input)
   return risk;
 }
 
-int dfs(int i, int j, const std::vector<std::vector<int>> &input, bool *marked[], size_t m, size_t n)
+int dfs(int i, int j, const std::vector<std::vector<int>> &input, std::vector<std::vector<bool>> &marked, size_t m, size_t n)
 {
   if (i < 0 || j < 0 || i >= m || j >= n || marked[i][j] == true)
     return 0;
@@ -44,29 +44,24 @@ int dfs(int i, int j, const std::vector<std::vector<int>> &input, bool *marked[]
   return 1 + dfs(i - 1, j, input, marked, m, n) + dfs(i, j - 1, input, marked, m, n) + dfs(i + 1, j, input, marked, m, n) + dfs(i, j + 1, input, marked, m, n);
 }
 
-bool **init_array(size_t m, size_t n, const std::vector<std::vector<int>> &input)
+void init_array(std::vector<std::vector<bool>> &marked, size_t m, size_t n, const std::vector<std::vector<int>> &input)
 {
-  bool **marked;
-  marked = new bool *[m];
   for (size_t i = 0; i < m; i++)
   {
-    marked[i] = new bool[n];
     for (size_t j = 0; j < n; j++)
     {
       if (input[i][j] == 9)
         marked[i][j] = true;
-      else
-        marked[i][j] = false;
     }
   }
-  return marked;
 }
 
 int find_basin(const std::vector<std::vector<int>> &input)
 {
   size_t m = input.size();
   size_t n = input[0].size();
-  bool **marked = init_array(m, n, input);
+  std::vector<std::vector<bool>> marked(m, std::vector<bool>(n, false));
+  init_array(marked, m, n, input);
   std::vector<int> res;
   for (size_t i = 0; i < m; i++)
   {
