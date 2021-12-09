@@ -3,6 +3,11 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include <unordered_set>
+#include <map>
+#include <set>
+
+static std::map<std::set<char>, int> m = {{{'c', 'f'}, 1}, {{'a', 'b', 'c', 'e', 'f', 'g'}, 0}, {{'a', 'c', 'd', 'e', 'g'}, 2}, {{'a', 'c', 'd', 'f', 'g'}, 3}, {{'b', 'c', 'd', 'f'}, 4}, {{'a', 'b', 'd', 'f', 'g'}, 5}, {{'a', 'b', 'd', 'e', 'f', 'g'}, 6}, {{'a', 'c', 'f'}, 7}, {{'a', 'b', 'c', 'd', 'e', 'f', 'g'}, 8}, {{'a', 'b', 'c', 'd', 'f', 'g'}, 9}};
 
 void split(const std::string &row, std::vector<std::vector<std::string>> &array_patterns, std::vector<std::vector<std::string>> &array_outputs)
 {
@@ -54,175 +59,72 @@ int calculate_first(const std::vector<std::vector<std::string>> &input_outputs)
   return sum;
 }
 
-void find_sixth(const std::vector<std::string> &size_six, std::unordered_map<std::string, int> &pattern_to_num,
-                std::unordered_map<int, std::string> &num_to_pattern)
+std::set<char> to_set(const std::string &str, std::unordered_map<char, char> &wire)
 {
-  for (const auto &str : size_six)
+  std::set<char> s;
+  for (const auto &c : str)
   {
-    auto six = num_to_pattern.find(6);
-    if (six == num_to_pattern.end())
-    {
-      auto one = num_to_pattern.find(1)->second;
-      for (const auto &c : one)
-      {
-        auto found = str.find(c);
-        if (found == std::string::npos)
-        {
-          num_to_pattern.insert({6, str});
-          pattern_to_num.insert({str, 6});
-          break;
-        }
-      }
-    }
-
-    auto nine = num_to_pattern.find(9);
-    if (nine == num_to_pattern.end())
-    {
-      auto four = num_to_pattern.find(4)->second;
-      bool isNine = true;
-      for (const auto &c : four)
-      {
-        auto found = str.find(c);
-        if (found == std::string::npos)
-        {
-          isNine = false;
-          break;
-        }
-      }
-      if (isNine)
-      {
-        num_to_pattern.insert({9, str});
-        pattern_to_num.insert({str, 9});
-      }
-    }
+    s.insert(wire.find(c)->second);
   }
-
-  for (const auto &s : size_six)
-  {
-    if (pattern_to_num.find(s) == pattern_to_num.end())
-    {
-      num_to_pattern.insert({0, s});
-      pattern_to_num.insert({s, 0});
-      break;
-    }
-  }
-}
-std::string calculate_four_minus_one(const std::unordered_map<int, std::string> &num_to_pattern)
-{
-  std::string r = "";
-  auto one = num_to_pattern.find(1)->second;
-  auto four = num_to_pattern.find(4)->second;
-  for (const auto &c : four)
-  {
-    if (c != one.at(0) && c != one.at(1))
-      r += c;
-  }
-  return r;
+  return s;
 }
 
-void find_fifth(const std::vector<std::string> &size_five, std::unordered_map<std::string, int> &pattern_to_num,
-                std::unordered_map<int, std::string> &num_to_pattern)
+bool calculate_right(const std::vector<std::string> &input_patterns, std::unordered_map<char, char> &wire, const std::unordered_set<char> &vars, int str_ind, int char_ind)
 {
-  std::string four_minus_one = calculate_four_minus_one(num_to_pattern);
-
-  for (const auto &str : size_five)
+  if (char_ind >= input_patterns[str_ind].size())
   {
-    auto three = num_to_pattern.find(3);
-    if (three == num_to_pattern.end())
+    if (m.find(to_set(input_patterns[str_ind], wire)) != m.end())
     {
-      auto one = num_to_pattern.find(1)->second;
-      bool isThree = true;
-      for (const auto &c : one)
-      {
-        auto found = str.find(c);
-        if (found == std::string::npos)
-        {
-          isThree = false;
-          break;
-        }
-      }
-      if (isThree)
-      {
-        num_to_pattern.insert({3, str});
-        pattern_to_num.insert({str, 3});
-      }
+      str_ind++;
+      char_ind = 0;
     }
-
-    auto five = num_to_pattern.find(5);
-    if (five == num_to_pattern.end())
-    {
-      bool isFive = true;
-      for (const auto &c : four_minus_one)
-      {
-        auto found = str.find(c);
-        if (found == std::string::npos)
-        {
-          isFive = false;
-          break;
-        }
-      }
-      if (isFive)
-      {
-        num_to_pattern.insert({5, str});
-        pattern_to_num.insert({str, 5});
-      }
-    }
+    else
+      return false;
   }
 
-  for (const auto &s : size_five)
+  if (str_ind >= input_patterns.size())
+    return true;
+
+  auto ch = input_patterns[str_ind].at(char_ind);
+  if (wire.find(ch) != wire.end())
   {
-    if (pattern_to_num.find(s) == pattern_to_num.end())
-    {
-      num_to_pattern.insert({2, s});
-      pattern_to_num.insert({s, 2});
-      break;
-    }
+    return calculate_right(input_patterns, wire, vars, str_ind, char_ind + 1);
   }
+
+  auto n_vars = vars;
+  for (const auto &k : vars)
+  {
+    wire.insert({ch, k});
+    n_vars.erase(k);
+    if (!calculate_right(input_patterns, wire, n_vars, str_ind, char_ind + 1))
+      wire.erase(ch);
+    else
+      return true;
+    n_vars.insert(k);
+  }
+  return false;
 }
 
-std::unordered_map<std::string, int> update_map(const std::vector<std::string> &input_patterns)
+bool compare(std::string &s1, std::string &s2)
 {
-  std::unordered_map<std::string, int> pattern_to_num;
-  std::unordered_map<int, std::string> num_to_pattern;
-  std::vector<std::string> size_six;
-  std::vector<std::string> size_five;
+  return s1.size() < s2.size();
+}
 
-  // find unique
+std::unordered_map<std::string, int> update_map(const std::vector<std::string> &input_patterns, std::unordered_map<char, char> &wire)
+{
+  std::unordered_map<std::string, int> r_m;
+  const std::unordered_set<char> vars({'a', 'b', 'c', 'd', 'e', 'f', 'g'});
+
+  auto array = input_patterns;
+  std::sort(array.begin(), array.end(), compare);
+
+  calculate_right(array, wire, vars, 0, 0);
+
   for (const auto &s : input_patterns)
   {
-    switch (s.size())
-    {
-    case 2:
-      pattern_to_num.insert({s, 1});
-      num_to_pattern.insert({1, s});
-      break;
-    case 4:
-      pattern_to_num.insert({s, 4});
-      num_to_pattern.insert({4, s});
-      break;
-    case 3:
-      pattern_to_num.insert({s, 7});
-      num_to_pattern.insert({7, s});
-      break;
-    case 7:
-      pattern_to_num.insert({s, 8});
-      num_to_pattern.insert({8, s});
-      break;
-    case 5:
-      size_five.push_back(s);
-      break;
-    case 6:
-      size_six.push_back(s);
-      break;
-    default:
-      break;
-    }
+    r_m.insert({s, m.find(to_set(s, wire))->second});
   }
-
-  // find nine & six
-  find_sixth(size_six, pattern_to_num, num_to_pattern);
-  find_fifth(size_five, pattern_to_num, num_to_pattern);
-  return pattern_to_num;
+  return r_m;
 }
 
 int calculate_second(const std::vector<std::vector<std::string>> &input_patterns, const std::vector<std::vector<std::string>> &input_outputs)
@@ -230,7 +132,8 @@ int calculate_second(const std::vector<std::vector<std::string>> &input_patterns
   int sum = 0;
   for (size_t i = 0; i < input_patterns.size(); i++)
   {
-    auto pattern_to_num = update_map(input_patterns[i]);
+    std::unordered_map<char, char> wire;
+    auto pattern_to_num = update_map(input_patterns[i], wire);
     int t_sum = 0;
     for (const auto &s : input_outputs[i])
     {
