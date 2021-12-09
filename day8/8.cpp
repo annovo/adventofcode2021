@@ -69,7 +69,7 @@ std::set<char> to_set(const std::string &str, std::unordered_map<char, char> &wi
   return s;
 }
 
-bool calculate_right(const std::vector<std::string> &input_patterns, std::unordered_map<char, char> &wire, const std::unordered_set<char> &vars, int str_ind, int char_ind)
+bool map_pattern(const std::vector<std::string> &input_patterns, std::unordered_map<char, char> &wire, const std::unordered_set<char> &vars, int str_ind, int char_ind)
 {
   if (char_ind >= input_patterns[str_ind].size())
   {
@@ -88,7 +88,7 @@ bool calculate_right(const std::vector<std::string> &input_patterns, std::unorde
   auto ch = input_patterns[str_ind].at(char_ind);
   if (wire.find(ch) != wire.end())
   {
-    return calculate_right(input_patterns, wire, vars, str_ind, char_ind + 1);
+    return map_pattern(input_patterns, wire, vars, str_ind, char_ind + 1);
   }
 
   auto n_vars = vars;
@@ -96,7 +96,7 @@ bool calculate_right(const std::vector<std::string> &input_patterns, std::unorde
   {
     wire.insert({ch, k});
     n_vars.erase(k);
-    if (!calculate_right(input_patterns, wire, n_vars, str_ind, char_ind + 1))
+    if (!map_pattern(input_patterns, wire, n_vars, str_ind, char_ind + 1))
       wire.erase(ch);
     else
       return true;
@@ -118,7 +118,7 @@ std::unordered_map<std::string, int> update_map(const std::vector<std::string> &
   auto array = input_patterns;
   std::sort(array.begin(), array.end(), compare);
 
-  calculate_right(array, wire, vars, 0, 0);
+  map_pattern(array, wire, vars, 0, 0);
 
   for (const auto &s : input_patterns)
   {
