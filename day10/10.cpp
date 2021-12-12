@@ -74,6 +74,7 @@ void solve(const std::string &fileName)
     split(row, v);
     input.push_back(v);
   }
+  find_score(input);
 }
 
 int main(int argc, char *argv[])
