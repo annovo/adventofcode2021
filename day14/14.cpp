@@ -3,7 +3,6 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include <list>
 
 void split(const std::string &row, std::unordered_map<std::string, char> &map)
 {
@@ -54,15 +53,13 @@ void find_poly(const std::unordered_map<std::string, char> &map,
   {
     steps--;
     std::unordered_map<std::string, long long> n_polymer;
-    for (auto &kv : polymer)
+    for (const auto &kv : polymer)
     {
-      if (kv.second == 0)
-        continue;
       auto it = map.find(kv.first);
       if (it != map.end())
       {
         auto cnt = kv.second;
-        kv.second = 0;
+
         update_count(count, it->second, cnt);
         update_count(n_polymer, std::string() + kv.first.at(0) + it->second, cnt);
         update_count(n_polymer, std::string() + it->second + kv.first.at(1), cnt);
