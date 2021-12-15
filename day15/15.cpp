@@ -28,7 +28,7 @@ void split(const std::string &row, std::vector<int> &a)
 int calculate_val(const std::vector<std::vector<int>> &input, int m, int n, int x, int y, int sign, bool is_x)
 {
   int val = is_x ? ((input[(x + sign) % m][y % n] + (x + sign) / m + y / n)) : ((input[x % m][(y + sign) % n] + (y + sign) / n + x / m));
-  return val >= 10 ? val % 10 + 1 : val;
+  return val % 9 == 0 ? val : val % 9;
 }
 
 void update_dist(std::priority_queue<Vertex, std::vector<Vertex>, LessThanByWeight> &pq,
