@@ -1,7 +1,4 @@
-#include <fstream>
 #include <iostream>
-#include <vector>
-#include <algorithm>
 #include <utility>
 
 const std::pair<int, int> x = {150, 171};
@@ -30,25 +27,14 @@ bool in_range(int i_x, int i_y)
 
 void find_range()
 {
-  std::pair<int, int> x_s;
+  // part 1
   int y_max = y.first * (-1) - 1;
-
   std::cout << (y_max + 1) * y_max / 2 << "\n";
 
-  x_s.second = (x.second + 1) / 2;
-  int i = 1;
-  int res = x.first - i;
+  // part 2
   int pairs = 0;
-  while (res > 0)
-  {
-    i++;
-    res = res - i;
-  }
-  x_s.first = i;
 
-  pairs += (x.second - x.first + 1) * (y.second - y.first + 1);
-
-  for (int i = x_s.first; i <= x_s.second; i++)
+  for (int i = 0; i <= x.second; i++)
   {
     for (int j = y.first; j <= y_max; j++)
     {
@@ -56,7 +42,6 @@ void find_range()
         pairs++;
     }
   }
-
   std::cout << pairs << "\n";
 }
 
